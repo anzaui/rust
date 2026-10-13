@@ -2,6 +2,18 @@
 
 All notable changes to the Rust template and STUI streaming engine are documented here.
 
+## [0.7.0](https://github.com/anzaui/rust/compare/v0.6.0...v0.7.0) (2026-10-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* 0.6.0 hardened engine (signature v2, contract, escaping)
+
+### Features
+
+* 0.6.0 hardened engine (signature v2, contract, escaping) ([bc6f62b](https://github.com/anzaui/rust/commit/bc6f62b518bf6e3207c14c160cbb09d3c1439caa))
+* initial commit of anza rust stui engine ([f5cfd63](https://github.com/anzaui/rust/commit/f5cfd633dee89c5e6b99d8badc17a75798e5dd11))
+
 ## [0.6.0] — 2026-10-13
 
 The hardening release. This repository now versions the engine on its own (from 0.6.0); earlier 0.5.x versions followed the Anza release.

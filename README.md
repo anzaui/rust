@@ -21,14 +21,14 @@ Add `anza` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-anza = "0.6.0"
+anza = "0.7.0"
 ```
 
 To enable Axum framework response helpers:
 
 ```toml
 [dependencies]
-anza = { version = "0.6.0", features = ["axum"] }
+anza = { version = "0.7.0", features = ["axum"] }
 ```
 
 <!-- x-release-please-end -->
