@@ -5,7 +5,7 @@
 [site]
 title = "Rust engine — Anza"
 base = "/rust"
-out = "_site.raw"
+out = "_site"
 
 [entry]
 home = "index.md"
@@ -24,6 +24,7 @@ styles = "../.anza/web/src/styles"
 tokens = "../.anza/web/src/tokens"
 view_code = "../.anza/web/src/views/code"
 docks = "../.anza/web/src/docks"
+favicon = "../logo.svg"
 
 [seo]
 site_name = "Rust engine — Anza"
