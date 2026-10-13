@@ -24,14 +24,7 @@ struct SampleArticle {
 #[test]
 fn test_struct_direct_rendering() {
   let template = "<article id=\"art-{{id}}\"><h1>{{title}}</h1><span>By {{author}}</span><a href=\"/{{slug}}\">Link</a></article>";
-  let chunks = anza::engine::slot::extract(template).unwrap();
-  let tpl = anza::engine::file::Template {
-    name: "test.html".into(),
-    path: std::path::PathBuf::from("test.html"),
-    raw: template.into(),
-    digest: [0u8; 32],
-    chunks,
-  };
+  let tpl = anza::engine::file::Template::new("test.html", "test.html", template, false).unwrap();
 
   let art = SampleArticle {
     id: 101,
@@ -118,11 +111,9 @@ fn test_engine_setup_and_fragment_rendering() {
   ).unwrap();
 
   let secret = b"my-test-secret-key-32-bytes-long";
-  let engine = Setup {
-    root: temp_dir.clone(),
-    signing: SignMode::Hmac { secret: secret.to_vec() },
-    watch: false,
-  }.run().unwrap();
+  let mut setup = Setup::new(temp_dir.clone());
+  setup.signing = SignMode::Hmac { secret: secret.to_vec() };
+  let engine = setup.run().unwrap();
 
   let mut params = HashMap::new();
   params.insert("title".into(), "Server Engine".into());
@@ -141,7 +132,7 @@ fn test_engine_setup_and_fragment_rendering() {
   // Verify signature
   let sig = envelope.sig.clone().unwrap();
   let msg = envelope.message();
-  assert!(hmac::verify::check(secret, msg.as_bytes(), &sig));
+  assert!(hmac::verify::check(secret, &msg, &sig));
 
   let _ = fs::remove_dir_all(&temp_dir);
 }
@@ -158,11 +149,7 @@ fn test_full_page_ssr_compilation() {
     "<page-home><template shadowrootmode=\"open\"><h1>{{title}}</h1></template></page-home>",
   ).unwrap();
 
-  let engine = Setup {
-    root: temp_dir.clone(),
-    signing: SignMode::None,
-    watch: false,
-  }.run().unwrap();
+  let engine = Setup::new(temp_dir.clone()).run().unwrap();
 
   let mut params = HashMap::new();
   params.insert("title".into(), "Welcome to Anza".into());

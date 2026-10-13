@@ -1,4 +1,8 @@
-# Anza (Rust Engine)
+<p align="center">
+  <img src="logo.svg" width="64" height="64" alt="Anza Logo" />
+</p>
+
+<h1 align="center">Anza (Rust Engine)</h1>
 
 A server-side template and dynamic fragment rendering library for Rust web applications.
 
@@ -6,24 +10,28 @@ A server-side template and dynamic fragment rendering library for Rust web appli
 
 1. **Full-Page Rendering**: Renders complete HTML documents configured with `<template shadowrootmode="open">` Declarative Shadow DOM shells.
 2. **Dynamic Fragment Envelopes**: Renders targeted HTML partials inside JSON `Envelope` payloads for partial UI updates.
-3. **Payload Verification**: Signs dynamic payloads using HMAC-SHA256 or Ed25519 so clients can verify partial updates.
+3. **Payload Verification**: Signs dynamic payloads using HMAC-SHA256 or Ed25519, and checks received envelopes with `anza::verify_envelope` (version, freshness, slot, signature).
 4. **Streaming**: Helpers for Server-Sent Events (SSE) and WebSocket message formats.
 
 ## Installation
+
+<!-- x-release-please-start-version -->
 
 Add `anza` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-anza = "0.5.0"
+anza = "0.6.0"
 ```
 
 To enable Axum framework response helpers:
 
 ```toml
 [dependencies]
-anza = { version = "0.5.0", features = ["axum"] }
+anza = { version = "0.6.0", features = ["axum"] }
 ```
+
+<!-- x-release-please-end -->
 
 ## Usage
 
@@ -31,24 +39,31 @@ anza = { version = "0.5.0", features = ["axum"] }
 
 ```rust
 use std::sync::Arc;
-use anza::{Setup, SignOptions};
+use anza::Setup;
 
-let engine = Arc::new(
-    Setup::new("./templates")
-        .with_signing(SignOptions::hmac("your-secret-key-at-least-32-chars-long"))
-        .run()
-        .expect("Failed to initialize template engine")
-);
+let mut setup = Setup::new("./templates");
+setup.signing = Setup::hmac(b"your-secret-key-at-least-32-bytes");
+let engine = Arc::new(setup.run().expect("Failed to load templates"));
 ```
+
+`setup.signing = Setup::ed25519("keys/origin.key", "keys/origin.pub")?;` signs
+with Ed25519 instead (raw 32-byte key files; a missing file is an error). The
+default is no signature. Keys are checked in `run()`: an HMAC secret shorter
+than 32 bytes, a private key that is not a 32-byte seed, or a public key that
+doesn't match is a `CRYPTO` error at setup.
+
+Other `Setup` fields: `watch` (reload on change, feature `watch`), `fragments`
+(allowlist of template names and `dir/` prefixes for fragments), `escape`
+(HTML-escape `{{x}}` values) and `max_template_bytes` (default 1 MiB).
 
 ### 2. Render Full Pages
 
 ```rust
 use anza::Page;
 
-// Renders full HTML document with parameters interpolated into slots
+// templates/pages/home.html inside templates/layout/shell.html ({{content}})
 let doc = Page::new("/")
-    .with_param("title", "My Web App")
+    .param("title", "My Web App")
     .run(&engine)
     .expect("Failed to render page");
 
@@ -60,52 +75,91 @@ println!("{}", doc.html);
 ```rust
 use anza::Fragment;
 
-// Renders a specific template fragment targeting a slot
 let envelope = Fragment::new("card.html", "feed")
-    .with_param("title", "New Article")
+    .param("title", "New Article")
     .run(&engine)
     .expect("Failed to render fragment");
 
-// envelope contains: slot, html, ts, and signature
+// {"v":2,"slot":"feed","ts":...,"html":"...","sig":"..."}
 let json = serde_json::to_string(&envelope).unwrap();
 ```
 
-### 4. Axum Integration Example
+### 4. Axum Integration Example (`features = ["axum"]`)
 
 ```rust
 use std::sync::Arc;
-use anza::{Setup, Page, Fragment, SignOptions};
-use axum::{routing::get, Router, response::{Html, Json}};
+use anza::{Fragment, Page, Setup};
+use axum::{routing::get, Router};
 
 #[tokio::main]
 async fn main() {
-    let engine = Arc::new(
-        Setup::new("./templates")
-            .with_signing(SignOptions::hmac("your-secret-key-at-least-32-chars-long"))
-            .run()
-            .unwrap()
-    );
+    let mut setup = Setup::new("./templates");
+    setup.signing = Setup::hmac(b"your-secret-key-at-least-32-bytes");
+    let engine = Arc::new(setup.run().unwrap());
 
     let app = Router::new()
         .route("/", get({
             let engine = engine.clone();
-            move || async move {
-                let doc = Page::new("/").with_param("title", "Home").run(&engine).unwrap();
-                Html(doc.html)
-            }
+            move || async move { Page::new("/").param("title", "Home").run(&engine).unwrap() }
         }))
         .route("/api/card", get({
             let engine = engine.clone();
-            move || async move {
-                let env = Fragment::new("card.html", "feed").run(&engine).unwrap();
-                Json(env)
-            }
+            move || async move { Fragment::new("card.html", "feed").run(&engine).unwrap() }
         }));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
 ```
+
+`Document` and `Envelope` implement `IntoResponse` (Axum) and `Responder`
+(Actix-web) when the matching feature is on.
+
+## Templates
+
+Templates use `{{name}}` and `{{{name}}}` placeholders and are parsed once at
+startup. By default both insert values as-is, so escape user input first with
+`anza::escape_html`. With `setup.escape = true`, `{{name}}` is HTML-escaped and
+`{{{name}}}` stays raw (use `{{{content}}}` in the shell). Errors display as
+`[Anza:CODE] message`; `Error::code()` returns the code. Template layout,
+rendering rules and signing are in the [documentation](https://anzaui.github.io/rust/).
+
+## Documentation
+
+- Guide and API reference: https://anzaui.github.io/rust/
+- [Engine Contract](https://github.com/anzaui/anza/blob/main/docs/engines/contract.md): the behaviour shared by
+  the Rust, TypeScript and Python engines (envelope format, signature v2, page
+  resolution, escaping, error codes). `tests/fixtures/` holds vendored copies
+  of its golden fixtures.
+- [Changelog](CHANGELOG.md)
+
+The docs are markdown in `docs/` (pages and sidebar in `docs/config.toml`),
+built with `anza docs` and deployed to GitHub Pages by
+`.github/workflows/docs.yml`. To build them locally you need the
+[Anza CLI](https://github.com/anzaui/anza/releases) and the anza repo's theme
+in `.anza/`:
+
+```bash
+git clone --depth 1 --branch v0.6.0 https://github.com/anzaui/anza .anza
+ANZA=/path/to/anza docs/build.sh     # writes _site/, served under /rust/
+```
+
+## Releasing
+
+Versions are independent of the other engines and of the Anza CLI.
+[release-please](https://github.com/googleapis/release-please) keeps a release
+PR open from the conventional commits on `main` (version bump in `Cargo.toml`
+and this README, plus a CHANGELOG entry).
+
+1. Merge the release PR. release-please tags the commit `v<version>` and
+   creates the GitHub release.
+2. Publish to crates.io from that tag:
+
+   ```bash
+   git checkout v<version>
+   cargo test --features watch
+   cargo publish
+   ```
 
 ## License
 
