@@ -1,0 +1,23 @@
+# mdBook config for the Rust engine docs (https://anzaui.github.io/rust/).
+# Build: mdbook build docs     Preview: mdbook serve docs
+
+[book]
+title = "Anza Rust Engine"
+description = "Reference for the anza crate: templates, pages, signed envelopes, streaming and adapters."
+authors = ["aduki, Labs"]
+language = "en"
+src = "src"
+
+[output.html]
+site-url = "/rust/"
+git-repository-url = "https://github.com/anzaui/rust"
+edit-url-template = "https://github.com/anzaui/rust/edit/main/docs/{path}"
+default-theme = "light"
+preferred-dark-theme = "navy"
+additional-css = ["theme/anza.css"]
+
+[output.html.search]
+enable = true
+
+[output.html.playground]
+runnable = false

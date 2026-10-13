@@ -6,7 +6,7 @@ For WebSockets, send the envelope JSON as a text message.
 
 `src/stream/ws/packet.rs`:
 
-```rust
+```rust,ignore
 use anza::{stream::ws, Envelope};
 
 let envelope = Envelope::new("notifications", 1_724_771_200, "<ui-toast>Order Shipped</ui-toast>");
@@ -19,7 +19,7 @@ let text: String = ws::encode(&envelope);
 
 The Anza browser library has no WebSocket envelope handler, so this is your code.
 If the envelopes are signed and you want to check them in the browser, see
-[Ed25519](../crypto/ed25519.md#4-verifying-in-the-browser-your-code). Remember
+[Ed25519 Signing](../crypto/ed25519.md#4-verifying-in-the-browser-your-code). Remember
 that the engine escapes values in `html` only when `escape` is on.
 
 ```javascript

@@ -6,7 +6,7 @@ allocate.
 
 ## 1. Implementation
 
-```rust
+```rust,ignore
 use std::borrow::Cow;
 use anza::Params;
 
@@ -32,7 +32,7 @@ impl Params for Article {
 
 ## 2. Usage
 
-```rust
+```rust,ignore
 let article = Article {
   id: 42,
   slug: "stui-in-rust".into(),

@@ -7,11 +7,15 @@ implementations are for binding a template yourself with `engine.get(name)?.bind
 
 ## 1. The trait
 
-```rust
+```rust,ignore
 use std::borrow::Cow;
 
 pub trait Params {
   fn resolve(&self, key: &str) -> Option<Cow<'_, str>>;
+
+  // Optional hooks with default implementations, used by the built-in types
+  // to bind faster: prepare() (convert once per bind), indexed() and fill()
+  // (resolve every name in one pass). Implementing `resolve` is enough.
 }
 ```
 
@@ -30,7 +34,7 @@ Returning `None` renders the placeholder as an empty string.
 | `Data<T: Serialize>` | Serializes `T` to a `serde_json::Value` once per bind |
 | `&T` where `T: Params` | Forwards |
 
-```rust
+```rust,ignore
 use std::collections::HashMap;
 use anza::Data;
 

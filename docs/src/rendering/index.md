@@ -40,7 +40,7 @@ The builders `Page`, `Fragment` and `Stream` (`Stream` is identical to
 call the engine in `.run(&engine)`. The engine methods take a
 `&HashMap<String, String>` directly:
 
-```rust
+```rust,ignore
 pub fn render_page(&self, route: &str, params: &HashMap<String, String>) -> Result<Document>;
 pub fn render_fragment(&self, template_name: &str, slot: &str, params: &HashMap<String, String>) -> Result<Envelope>;
 ```
@@ -57,7 +57,7 @@ Templates have two placeholders: `{{name}}` inserts a value and `{{{name}}}`
 inserts it raw. With `escape` off (the default) both insert values as is, so
 escape untrusted input yourself:
 
-```rust
+```rust,ignore
 use anza::{escape_html, Fragment};
 
 let comment = escape_html(user_input); // & < > " ' -> &amp; &lt; &gt; &quot; &#39;
@@ -70,7 +70,7 @@ With `escape` on, the engine escapes `{{name}}` values for you and leaves
 `{{{name}}}` raw. Use `{{{content}}}` in `layout/shell.html`, or the page HTML
 is escaped too:
 
-```rust
+```rust,ignore
 let mut setup = Setup::new("templates");
 setup.escape = true;
 let engine = setup.run()?;

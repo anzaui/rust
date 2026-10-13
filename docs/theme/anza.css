@@ -1,0 +1,20 @@
+/* Anza brand accent on top of the stock mdBook themes: links, the active
+   sidebar entry and its heading marker. Everything else is mdBook's. */
+:root {
+  --anza-brand: oklch(62% 0.17 145);
+  --anza-brand-dark: oklch(78% 0.15 145);
+}
+
+.light {
+  --links: var(--anza-brand);
+  --sidebar-active: var(--anza-brand);
+  --sidebar-header-border-color: var(--anza-brand);
+}
+
+.navy, .coal {
+  --links: var(--anza-brand-dark);
+  --sidebar-active: var(--anza-brand-dark);
+  --sidebar-header-border-color: var(--anza-brand-dark);
+}
+
+.content a:hover { text-decoration: underline; }

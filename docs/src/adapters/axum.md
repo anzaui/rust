@@ -5,7 +5,7 @@ to a JSON response, so handlers can return them directly.
 
 ## 1. Page handler
 
-```rust
+```rust,ignore
 use std::sync::Arc;
 
 use anza::{Document, Engine, Page};
@@ -21,7 +21,7 @@ async fn home(State(engine): State<Arc<Engine>>) -> Result<Document, StatusCode>
 
 ## 2. Fragment handler
 
-```rust
+```rust,ignore
 use std::sync::Arc;
 
 use anza::{Engine, Envelope, Fragment};
@@ -44,7 +44,7 @@ async fn card(
 
 ## 3. Router
 
-```rust
+```rust,ignore
 use std::sync::Arc;
 
 use anza::Setup;
@@ -64,4 +64,4 @@ async fn main() {
 }
 ```
 
-For SSE, see [Server-Sent Events](../streaming/sse.md).
+For SSE, see [Server-Sent Events (SSE)](../streaming/sse.md).

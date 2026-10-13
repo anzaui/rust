@@ -10,7 +10,7 @@ The hardening release. This repository now versions the engine on its own (from 
 - `anza::verify_envelope(VerifyKey, &Envelope, &VerifyOptions)` and `Engine::verify_envelope`: version, freshness (max age, 5 s future skew), expected slot, then the signature (constant-time). Failures are `Error::Crypto` with a fixed message per check.
 - `anza::escape_html`, the `Setup::escape` option (`{{x}}` HTML-escaped, `{{{x}}}` raw; default off), `Setup::fragments` (fragment allowlist) and `Setup::max_template_bytes` (default 1 MiB).
 - `crypto::hex` (strict lowercase hex), `crypto::signer::Signer` (keys decoded once), `crypto::envelope`, `engine::name`, `Error::code()` / `Error::message()`, `Template::new`.
-- Golden test fixtures in `tests/fixtures/`: vendored copies of the fixtures shared by the Rust, TypeScript and Python engines (kept in the anza repo under `engines/fixtures/`), checked by the contract tests. The behaviour they pin down is the [Engine Contract](https://anza.aduki.org/docs/engines/contract).
+- Golden test fixtures in `tests/fixtures/`: vendored copies of the fixtures shared by the Rust, TypeScript and Python engines (kept in the anza repo under `engines/fixtures/`), checked by the contract tests. The behaviour they pin down is the [Engine Contract](https://github.com/anzaui/anza/blob/main/docs/engines/contract.md).
 
 ### Changed
 - **Breaking: signature v2.** The message is `anza-sig-v2\n` + length-prefixed `ts`, `slot`, `html`, `css` (was `ts:slot:html`); `Envelope` gains `v` (always 2) and `Envelope::message()` returns the v2 bytes.
@@ -20,7 +20,7 @@ The hardening release. This repository now versions the engine on its own (from 
 - **Breaking:** `Engine::get` returns `Arc<Template>`; `Chunk` gains `Raw`; `Params` gains `prepare`/`indexed`/`fill` (with defaults); errors display as `[Anza:CODE] message`; `engine::file::watch::listen` takes the engine's `CacheStore` and `LoadOptions`.
 - Integral floats render without `.0`.
 - Faster rendering: cached templates are shared instead of cloned per render, templates compile to a plan once, `Data<T>` serializes once per render (was once per slot), pair lists are scanned once, and unsigned renders skip the signature message (100-slot fragment: 8.3 → 1.8 µs).
-- Documentation is built with `anza docs` and published at https://anzaui.github.io/rust/ (was mdBook).
+- Documentation (mdBook) is rewritten for this release and published at https://anzaui.github.io/rust/.
 
 ### Security
 - Hex decoding is byte-wise: a non-ASCII signature no longer panics the verifier; uppercase and odd-length hex are rejected.

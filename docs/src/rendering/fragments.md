@@ -6,7 +6,7 @@ Fragments and pushes return an `Envelope`.
 
 `anza::Envelope` (in `src/models/envelope.rs`):
 
-```rust
+```rust,ignore
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Envelope {
   #[serde(default)]
@@ -37,7 +37,7 @@ the signature covers).
 
 ## 2. Rendering a fragment
 
-```rust
+```rust,ignore
 use anza::Fragment;
 
 let envelope = Fragment::new("feed/card.html", "feed-slot")
@@ -61,7 +61,7 @@ By default any cached template can be rendered as a fragment. Set
 `Setup::fragments` to limit that. An entry ending in `/` allows that prefix;
 any other entry allows that exact name:
 
-```rust
+```rust,ignore
 let mut setup = Setup::new("templates");
 setup.fragments = vec!["fragments/".into(), "feed/card.html".into()];
 let engine = setup.run()?;
@@ -80,7 +80,7 @@ or an empty, `.` or `..` segment) is a `Validation` error.
 To bind structured data instead of string pairs, bind the template yourself and
 build the envelope:
 
-```rust
+```rust,ignore
 use anza::Envelope;
 
 let tpl = engine.get("feed/card.html")?; // Arc<Template>

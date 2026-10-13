@@ -6,7 +6,7 @@ The Rust engine (crate **`anza`**) renders server-templated UI (STUI) from plain
 pushes. Envelopes can be signed with HMAC-SHA256 or Ed25519 over the v2
 signature message, and checked with `anza::verify_envelope`. The behaviour is
 shared with the TypeScript and Python engines (see the
-[Engine Contract](https://anza.aduki.org/docs/engines/contract)).
+[Engine Contract](https://github.com/anzaui/anza/blob/main/docs/engines/contract.md)).
 
 ```
 ┌─────────────────┐   Full page (HTML, open DSD)            ┌─────────────────┐
@@ -50,7 +50,7 @@ anza = "0.6"
 serde_json = "1"
 ```
 
-```rust
+```rust,ignore
 use anza::{Fragment, Page, Setup};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

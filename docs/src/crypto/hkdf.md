@@ -11,12 +11,12 @@ keys, for example a per-user HMAC secret from a session token.
 
 `src/crypto/hkdf/derive.rs`:
 
-```rust
+```rust,ignore
 // anza::crypto::hkdf::derive
 pub fn key(ikm: &[u8], salt: Option<&[u8]>, info: &[u8]) -> anza::Result<[u8; 32]>;
 ```
 
-```rust
+```rust,ignore
 use anza::crypto::{hkdf::derive, hmac::sign};
 
 let session_token = b"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";

@@ -1,7 +1,6 @@
 target/
-# Docs build (docs/build.sh) and the anza checkout it reads the theme from
+# Docs build (mdbook build docs -d _site)
 _site/
-.anza
 *.db
 *.db-wal
 *.db-shm

@@ -8,7 +8,7 @@ from the origin unchanged.
 
 `anza::SignMode` (in `src/engine/cache/mod.rs`):
 
-```rust
+```rust,ignore
 #[derive(Clone)] // Debug is implemented by hand and redacts keys
 pub enum SignMode {
   Ed25519 { private_key: Vec<u8>, public_key: Vec<u8> },
@@ -19,7 +19,7 @@ pub enum SignMode {
 
 Set it on `Setup` before `run()`:
 
-```rust
+```rust,ignore
 use anza::{Setup, SignMode};
 
 let mut setup = Setup::new("templates");
@@ -74,7 +74,7 @@ Changing the timestamp, slot, HTML or CSS breaks the signature.
 
 `anza::verify_envelope` checks a received envelope:
 
-```rust
+```rust,ignore
 use anza::{verify_envelope, Envelope, VerifyKey, VerifyOptions};
 
 let envelope: Envelope = serde_json::from_str(&body)?;
@@ -111,4 +111,4 @@ slot from being replayed into another.
 The Anza browser library does **not** verify envelopes: it has no envelope or
 stream handler. Verify on the server or edge that relays fragments with
 `verify_envelope`, or in your own browser code by rebuilding the v2 message
-and calling `crypto.subtle.verify` (see [Ed25519](ed25519.md)).
+and calling `crypto.subtle.verify` (see [Ed25519 Signing](ed25519.md)).

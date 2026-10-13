@@ -32,7 +32,7 @@ shadow_content)`.
 
 ## 2. Rendering a page
 
-```rust
+```rust,ignore
 use anza::Page;
 
 let doc = Page::new("/article")
@@ -97,7 +97,7 @@ escape the page HTML, so use the triple-brace form in shells.
 
 To answer unknown routes with a 404, match the error:
 
-```rust
+```rust,ignore
 match Page::new(path).run(&engine) {
   Ok(doc) => Ok(doc),
   Err(anza::Error::NotFound(_)) => Err(StatusCode::NOT_FOUND),

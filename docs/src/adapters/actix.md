@@ -5,7 +5,7 @@ With the `actix` feature, `Document` and `Envelope` implement
 
 ## 1. Handlers
 
-```rust
+```rust,ignore
 use actix_web::{error::ErrorInternalServerError, get, web};
 use anza::{Document, Engine, Envelope, Fragment, Page};
 
@@ -28,7 +28,7 @@ async fn card(engine: web::Data<Engine>) -> actix_web::Result<Envelope> {
 
 ## 2. Server
 
-```rust
+```rust,ignore
 use actix_web::{web, App, HttpServer};
 use anza::Setup;
 

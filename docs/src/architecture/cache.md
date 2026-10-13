@@ -6,7 +6,7 @@ Templates are loaded, hashed with SHA-256 and stored in memory by `Setup::run()`
 
 `anza::engine::file::Template` (in `src/engine/file/load.rs`):
 
-```rust
+```rust,ignore
 #[derive(Debug, Clone)]
 pub struct Template {
   pub name: String,      // path relative to the root, e.g. "pages/home.html"
@@ -35,7 +35,7 @@ its absolute path.
 
 ## 2. Store and engine
 
-```rust
+```rust,ignore
 pub struct CacheStore {
   pub templates: RwLock<HashMap<String, Arc<Template>>>,
 }
@@ -60,7 +60,7 @@ request input never reaches the filesystem. A malformed name (leading `/`,
 `\`, NUL, or an empty, `.` or `..` segment) is `Error::Validation`; an
 unknown one is `Error::NotFound`:
 
-```rust
+```rust,ignore
 let tpl = engine.get("feed/card.html")?;
 let html = tpl.bind(&[("title", "Hello World")])?;
 ```
@@ -73,7 +73,7 @@ SHA-256 of the template contents (`anza::crypto::digest`), the same digest the
 TypeScript and Python engines produce. It changes whenever a file changes, so it can
 be used for cache busting or deployment checks.
 
-```rust
+```rust,ignore
 let manifest = engine.manifest()?;
 for (name, digest) in &manifest.templates {
   println!("{name} -> {}", &digest[..12]);

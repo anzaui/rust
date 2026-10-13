@@ -6,7 +6,7 @@ Slot extraction turns a template string into a flat list of chunks.
 
 `anza::engine::slot::Chunk` (defined in `src/engine/slot/parse.rs`):
 
-```rust
+```rust,ignore
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Chunk {
   Static(Vec<u8>),
@@ -34,7 +34,7 @@ the string once:
 An unclosed `{{` or `{{{`, or an empty placeholder, returns `Error::Template`.
 There is no other syntax: no loops, conditionals, filters or comments.
 
-```rust
+```rust,ignore
 use anza::engine::slot::{extract, Chunk};
 
 let chunks = extract("<div class=\"user\">{{name}} is {{status}}</div>")?;
@@ -56,7 +56,7 @@ slot positions, with each distinct name looked up once per bind.
 To bind chunks without a `Template`, use the free functions (they compile a
 `Plan` on every call, so keep a `Template` or `Plan` for repeated binds):
 
-```rust
+```rust,ignore
 pub fn string<P: Params + ?Sized>(chunks: &[Chunk], params: &P) -> Result<String>;
 pub fn string_with<P: Params + ?Sized>(chunks: &[Chunk], params: &P, escape: bool) -> Result<String>;
 pub fn inject<P: Params + ?Sized, W: std::io::Write>(chunks: &[Chunk], params: &P, out: &mut W) -> Result<()>;

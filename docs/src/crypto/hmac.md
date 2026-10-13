@@ -8,14 +8,14 @@ ship the secret to browsers.
 
 `src/crypto/hmac/sign.rs` and `src/crypto/hmac/verify.rs`:
 
-```rust
+```rust,ignore
 // anza::crypto::hmac::sign
 pub fn payload(secret: &[u8], data: &[u8]) -> anza::Result<String>;
 // anza::crypto::hmac::verify
 pub fn check(secret: &[u8], data: &[u8], signature_hex: &str) -> bool;
 ```
 
-```rust
+```rust,ignore
 use anza::crypto::{envelope, hmac::{sign, verify}};
 
 let secret = b"my-secure-cluster-shared-secret-32b";
@@ -38,7 +38,7 @@ hex (including uppercase or odd-length hex) or a wrong signature.
 
 Any change to the timestamp, slot or HTML makes verification fail:
 
-```rust
+```rust,ignore
 let tampered = envelope::message(1_724_771_200, "feed", "<ui-alert>Corrupted</ui-alert>", None);
 assert!(!verify::check(secret, &tampered, &sig));
 
@@ -49,7 +49,7 @@ assert!(!verify::check(secret, &other_time, &sig));
 `check` alone accepts a replayed old envelope, or one replayed into another
 slot. `anza::verify_envelope` also checks the version, the age and the slot:
 
-```rust
+```rust,ignore
 use anza::{verify_envelope, VerifyKey, VerifyOptions};
 
 verify_envelope(VerifyKey::Hmac(secret), &received, &VerifyOptions::new("feed", 60))?;

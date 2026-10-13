@@ -133,15 +133,16 @@ rendering rules and signing are in the [documentation](https://anzaui.github.io/
   of its golden fixtures.
 - [Changelog](CHANGELOG.md)
 
-The docs are markdown in `docs/` (pages and sidebar in `docs/config.toml`),
-built with `anza docs` and deployed to GitHub Pages by
-`.github/workflows/docs.yml`. To build them locally you need the
-[Anza CLI](https://github.com/anzaui/anza/releases) and the anza repo's theme
-in `.anza/`:
+The docs are an [mdBook](https://rust-lang.github.io/mdBook/): pages in
+`docs/src/`, the table of contents in `docs/src/SUMMARY.md`, settings in
+`docs/book.toml`. `.github/workflows/docs.yml` builds them with mdBook 0.5.4,
+loads every page in headless Chrome (`docs/check.mjs`) and deploys to GitHub
+Pages. To preview locally:
 
 ```bash
-git clone --depth 1 --branch v0.6.0 https://github.com/anzaui/anza .anza
-ANZA=/path/to/anza docs/build.sh     # writes _site/, served under /rust/
+cargo install mdbook --version 0.5.4 --locked
+mdbook serve docs --open     # live preview at http://localhost:3000
+mdbook build docs -d _site   # static site in _site/
 ```
 
 ## Releasing

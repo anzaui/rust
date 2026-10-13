@@ -4,7 +4,7 @@
 
 `src/stream/sse/frame.rs`:
 
-```rust
+```rust,ignore
 use anza::{stream::sse, Envelope};
 
 let envelope = Envelope::new("feed", 1_724_771_200, "<article>Live Post</article>");
@@ -23,7 +23,7 @@ With the `axum` feature, `anza::adapters::axum::event` turns an envelope into an
 `axum::response::sse::Event` named `template`. This example also needs
 `futures-util` and `tokio` (with the `time` feature) in your own `Cargo.toml`.
 
-```rust
+```rust,ignore
 use std::{sync::Arc, time::Duration};
 
 use anza::{adapters::axum::event, Engine, Fragment};
