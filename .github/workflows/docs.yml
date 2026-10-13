@@ -1,0 +1,72 @@
+name: Docs
+
+# Builds docs/*.md with the Anza docs generator and deploys the site to
+# GitHub Pages (https://anzaui.github.io/rust/). The theme (styles, tokens,
+# docks, view-code) comes from the anza repo checked out at ANZA_REF into
+# .anza/, the CLI from the anza release with the same tag.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  ANZA_REF: v0.6.0
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Check out the anza theme
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: anzaui/anza
+          ref: ${{ env.ANZA_REF }}
+          path: .anza
+          persist-credentials: false
+
+      - name: Download the anza CLI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/anza"
+          if gh release download "$ANZA_REF" -R anzaui/anza -p anza-linux-x64 -D "$RUNNER_TEMP/anza"; then
+            mv "$RUNNER_TEMP/anza/anza-linux-x64" "$RUNNER_TEMP/anza/anza"
+          else
+            echo "::warning::no anza-linux-x64 asset on anzaui/anza $ANZA_REF; building the CLI from .anza/tools"
+            cargo build --release --locked --manifest-path .anza/tools/Cargo.toml --target-dir "$RUNNER_TEMP/anza-target"
+            cp "$RUNNER_TEMP/anza-target/release/anza" "$RUNNER_TEMP/anza/anza"
+          fi
+          chmod +x "$RUNNER_TEMP/anza/anza"
+          echo "ANZA=$RUNNER_TEMP/anza/anza" >> "$GITHUB_ENV"
+
+      - name: Build docs
+        run: docs/build.sh
+
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

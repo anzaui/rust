@@ -1,0 +1,170 @@
+# docs/config.toml — manifest for `anza docs` (the Anza docs generator).
+# Build the site with docs/build.sh; it needs the anza CLI and the anza repo's
+# web/src theme checked out in .anza/ (the docs workflow does both).
+
+[site]
+title = "Rust engine — Anza"
+base = "/rust"
+out = "_site.raw"
+
+[entry]
+home = "index.md"
+route = "/rust"
+landing = false
+root_dock = "docs"
+
+[files]
+roots = ["."]
+include = ["**/*.md"]
+exclude = []
+
+[assets]
+# Theme folders from the anza repo (checked out at a pinned tag into .anza/).
+styles = "../.anza/web/src/styles"
+tokens = "../.anza/web/src/tokens"
+view_code = "../.anza/web/src/views/code"
+docks = "../.anza/web/src/docks"
+
+[seo]
+site_name = "Rust engine — Anza"
+sitemap = false
+robots = false
+json_ld = false
+origin = "https://anzaui.github.io"
+
+[[sidebar.section]]
+id = "start"
+title = "Getting Started"
+
+[[sidebar.section.items]]
+path = "index.md"
+label = "Introduction"
+order = 0
+
+[[sidebar.section]]
+id = "architecture"
+title = "Architecture"
+
+[[sidebar.section.items]]
+path = "architecture/index.md"
+label = "Overview"
+order = 0
+
+[[sidebar.section.items]]
+path = "architecture/slots.md"
+label = "Slot Chunking"
+order = 1
+
+[[sidebar.section.items]]
+path = "architecture/cache.md"
+label = "Template Cache"
+order = 2
+
+[[sidebar.section]]
+id = "rendering"
+title = "Rendering Pipeline"
+
+[[sidebar.section.items]]
+path = "rendering/index.md"
+label = "Overview"
+order = 0
+
+[[sidebar.section.items]]
+path = "rendering/ssr.md"
+label = "Full-Page SSR & Open DSD"
+order = 1
+
+[[sidebar.section.items]]
+path = "rendering/fragments.md"
+label = "Fragment Envelopes"
+order = 2
+
+[[sidebar.section]]
+id = "crypto"
+title = "Cryptographic Verification"
+
+[[sidebar.section.items]]
+path = "crypto/index.md"
+label = "Overview"
+order = 0
+
+[[sidebar.section.items]]
+path = "crypto/ed25519.md"
+label = "Ed25519 Signing"
+order = 1
+
+[[sidebar.section.items]]
+path = "crypto/hmac.md"
+label = "HMAC-SHA256"
+order = 2
+
+[[sidebar.section.items]]
+path = "crypto/hkdf.md"
+label = "Key Derivation with HKDF"
+order = 3
+
+[[sidebar.section]]
+id = "streaming"
+title = "Real-Time Streaming"
+
+[[sidebar.section.items]]
+path = "streaming/index.md"
+label = "Overview"
+order = 0
+
+[[sidebar.section.items]]
+path = "streaming/sse.md"
+label = "Server-Sent Events (SSE)"
+order = 1
+
+[[sidebar.section.items]]
+path = "streaming/ws.md"
+label = "WebSocket Frames"
+order = 2
+
+[[sidebar.section]]
+id = "adapters"
+title = "Framework Adapters"
+
+[[sidebar.section.items]]
+path = "adapters/index.md"
+label = "Overview"
+order = 0
+
+[[sidebar.section.items]]
+path = "adapters/axum.md"
+label = "Axum Integration"
+order = 1
+
+[[sidebar.section.items]]
+path = "adapters/actix.md"
+label = "Actix-web Integration"
+order = 2
+
+[[sidebar.section]]
+id = "params"
+title = "Parameter Binding"
+
+[[sidebar.section.items]]
+path = "params/index.md"
+label = "Overview"
+order = 0
+
+[[sidebar.section.items]]
+path = "params/structs.md"
+label = "Implementing Params for Structs"
+order = 1
+
+[[sidebar.section]]
+id = "performance"
+title = "Performance"
+
+[[sidebar.section.items]]
+path = "performance/index.md"
+label = "Overview"
+order = 0
+
+[[sidebar.section.items]]
+path = "performance/memory.md"
+label = "Buffer Pre-Sizing & Memory Layout"
+order = 1
