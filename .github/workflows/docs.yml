@@ -1,17 +1,12 @@
 name: Docs
 
-# Builds docs/*.md with the Anza docs generator and deploys the site to
-# GitHub Pages (https://anzaui.github.io/rust/). The theme (styles, tokens,
-# docks, view-code) comes from the anza repo checked out at ANZA_REF into
-# .anza/, the CLI from the anza release with the same tag.
+# Builds the mdBook in docs/ (docs/book.toml, pages in docs/src/) and deploys
+# it to GitHub Pages (https://anzaui.github.io/rust/).
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
-env:
-  ANZA_REF: v0.6.0
 
 permissions:
   contents: read
@@ -27,43 +22,26 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Check out the anza theme
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: peaceiris/actions-mdbook@ee69d230fe19748b7abf22df32acaa93833fad08 # v2
         with:
-          repository: anzaui/anza
-          ref: ${{ env.ANZA_REF }}
-          path: .anza
-          persist-credentials: false
+          mdbook-version: '0.5.4'
 
-      - name: Download the anza CLI
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p "$RUNNER_TEMP/anza"
-          if gh release download "$ANZA_REF" -R anzaui/anza -p anza-linux-x64 -D "$RUNNER_TEMP/anza"; then
-            mv "$RUNNER_TEMP/anza/anza-linux-x64" "$RUNNER_TEMP/anza/anza"
-          else
-            echo "::warning::no anza-linux-x64 asset on anzaui/anza $ANZA_REF; building the CLI from .anza/tools"
-            cargo build --release --locked --manifest-path .anza/tools/Cargo.toml --target-dir "$RUNNER_TEMP/anza-target"
-            cp "$RUNNER_TEMP/anza-target/release/anza" "$RUNNER_TEMP/anza/anza"
-          fi
-          chmod +x "$RUNNER_TEMP/anza/anza"
-          echo "ANZA=$RUNNER_TEMP/anza/anza" >> "$GITHUB_ENV"
-
+      # mdBook 0.5 resolves -d against the working directory (not the book).
       - name: Build docs
-        run: '"$ANZA" docs --config docs/config.toml --out _site'
+        run: mdbook build docs -d _site
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
 
       # Load every page in headless Chrome under /rust/ before deploying: fails on
-      # JS errors, failed requests, a stuck loader or broken soft navigation.
+      # JS errors, failed requests, a missing h1, a stuck loader, broken links
+      # between pages or a sidebar click that doesn't load the page.
       - name: Browser check
         run: |
           npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/pp" puppeteer-core@24.43.1
           PUPPETEER_CORE="$RUNNER_TEMP/pp/node_modules/puppeteer-core/lib/esm/puppeteer/puppeteer-core.js" \
-            node docs/check.mjs _site /rust
+            node docs/check.mjs _site /rust --links='.sidebar .chapter a' --heading='main h1'
 
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
