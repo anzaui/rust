@@ -53,6 +53,18 @@ jobs:
       - name: Build docs
         run: '"$ANZA" docs --config docs/config.toml --out _site'
 
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      # Load every page in headless Chrome under /rust/ before deploying: fails on
+      # JS errors, failed requests, a stuck loader or broken soft navigation.
+      - name: Browser check
+        run: |
+          npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/pp" puppeteer-core@24.43.1
+          PUPPETEER_CORE="$RUNNER_TEMP/pp/node_modules/puppeteer-core/lib/esm/puppeteer/puppeteer-core.js" \
+            node docs/check.mjs _site /rust
+
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: _site
